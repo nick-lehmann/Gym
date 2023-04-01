@@ -1,9 +1,23 @@
 import { z } from 'zod'
-import { Problem } from '../problem.js'
+import { BaseProviderConfig } from './config.js'
 
-export type Provider = {
-  name: string
-  identifier: z.ZodObject<any>
+export abstract class Provider<
+  Identifier = any,
+  Config extends BaseProviderConfig = BaseProviderConfig
+> {
+  constructor(
+    public readonly name: string,
+    public readonly identifier: z.ZodObject<any>,
+    public readonly config: Config,
+    public readonly supportsSubmission: boolean = false
+  ) {}
 
-  getLinkToProblem: (problem: Problem) => string
+  abstract getLinkToProblem(identifier: Identifier): string
+
+  /**
+   * Returns the `{keys}` that are available in the `PathTemplates` for this provider.
+   */
+  identifierParts(): string[] {
+    return Object.keys(this.identifier.shape)
+  }
 }

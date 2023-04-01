@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as vscode from 'vscode'
-import { ProblemPaths, ProgrammingLanguage } from './config.js'
+import { ProgrammingLanguage } from './config.js'
 import { ROOT_PATH } from './extension.js'
 import { Problem } from './problem.js'
 

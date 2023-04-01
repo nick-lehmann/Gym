@@ -1,22 +1,33 @@
 import * as vscode from 'vscode'
 import { parse as parseYaml } from 'yaml'
 import { z } from 'zod'
-import { getGlobPattern } from './discovery.js'
 import { AdventOfCodeConfig } from './providers/adventofcode/config.js'
 import { AdventOfCode } from './providers/adventofcode/index.js'
+import {
+  ProjectEulerConfig,
+  ProjectEulerProvider,
+} from './providers/projecteuler.js'
 import { Provider } from './providers/providers.js'
 
 export const IDENTIFIER = 'gym'
 export const CONFIG_NAME = 'gym.yaml'
 
-export const PROVIDERS: Provider[] = [AdventOfCode]
+export function getProviders(config: ProvidersConfig): Provider<any>[] {
+  const providers: Provider<any, any>[] = []
+
+  providers.push(new AdventOfCode(config.adventofcode))
+  providers.push(new ProjectEulerProvider(config.projecteuler))
+
+  return providers
+}
 
 /**
  * A path that still contains placeholders.
  *
  * For advent of code, these placeholders can be: {year} and {day}.
  */
-export const TemplatePath = z.string()
+export const PathTemplate = z.string()
+export type PathTemplate = z.infer<typeof PathTemplate>
 
 export const SUPPORTED_PROGRAMMING_LANGUAGES = [
   'python',
@@ -26,16 +37,15 @@ export const SUPPORTED_PROGRAMMING_LANGUAGES = [
 ] as const
 export const ProgrammingLanguage = z.enum(SUPPORTED_PROGRAMMING_LANGUAGES)
 export type ProgrammingLanguage = z.infer<typeof ProgrammingLanguage>
-export const ProblemPaths = z.record(ProgrammingLanguage, z.string())
-export type ProblemPaths = z.infer<typeof ProblemPaths>
 
+// TODO: Make providers optional.
 export const ProvidersConfig = z.object({
   adventofcode: AdventOfCodeConfig,
+  projecteuler: ProjectEulerConfig,
 })
+export type ProvidersConfig = z.infer<typeof ProvidersConfig>
 
 export const Config = z.object({
-  paths: ProblemPaths,
-  data: TemplatePath,
   providers: ProvidersConfig,
 })
 export type Config = z.infer<typeof Config>
@@ -46,34 +56,4 @@ export async function getConfig(): Promise<Config> {
   const rawConfig = parseYaml(content.toString())
 
   return Config.parse(rawConfig)
-}
-
-export type SolutionPaths = {
-  provider: Provider
-  language: ProgrammingLanguage
-  root: string
-  pathPattern: string
-}
-
-export function getSolutionPathPatterns(config: Config): SolutionPaths[] {
-  if (!vscode.workspace.workspaceFolders) return []
-
-  const solutionPaths = []
-
-  for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-    for (const provider of PROVIDERS) {
-      const identifierParts = Object.keys(provider.identifier.shape)
-
-      for (const [language, path] of Object.entries(config.paths)) {
-        solutionPaths.push({
-          provider,
-          language: language as ProgrammingLanguage,
-          root: workspaceFolder.uri.fsPath,
-          pathPattern: getGlobPattern(identifierParts, path),
-        })
-      }
-    }
-  }
-
-  return solutionPaths
 }

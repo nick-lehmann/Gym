@@ -1,15 +1,12 @@
 import { z } from 'zod'
 
-export const AOCProblemIdentifier = z.object({
+export const Identifier = z.object({
   year: z.number(),
   day: z.number(),
 })
-export type ProblemIdentifier = z.infer<typeof AOCProblemIdentifier>
+export type Identifier = z.infer<typeof Identifier>
 
-export const identifierFromParts = ([
-  year,
-  day,
-]: string[]): ProblemIdentifier => ({
+export const identifierFromParts = ([year, day]: string[]): Identifier => ({
   year: parseInt(year),
   day: parseInt(day),
 })

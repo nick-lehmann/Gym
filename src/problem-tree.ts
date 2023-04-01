@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { PROVIDERS } from './config.js'
+import { getConfig, getProviders } from './config.js'
 import { findSolutions, findSolutionsByProblem } from './discovery.js'
 import { Problem } from './problem.js'
 import { Provider } from './providers/providers.js'
@@ -20,8 +20,8 @@ export class ProblemTreeProvider implements vscode.TreeDataProvider<TreeItem> {
 
   async getProviderItems(): Promise<TreeItem[]> {
     // TODO: Only show `enabled` providers
-    // const config = await getConfig()
-    const providers = Object.values(PROVIDERS)
+    const config = await getConfig()
+    const providers = Object.values(getProviders(config.providers))
 
     return providers.map((provider) =>
       TreeItem.fromProvider(provider, vscode.TreeItemCollapsibleState.Collapsed)

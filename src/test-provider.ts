@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { Config, getConfig, getSolutionPathPatterns } from './config.js'
+import { getConfig } from './config.js'
 
 /**
  * Provides a test controller that lets you run your solutions from the integrated testing view.
