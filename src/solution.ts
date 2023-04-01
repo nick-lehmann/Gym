@@ -1,5 +1,7 @@
+import * as fs from 'fs'
 import * as vscode from 'vscode'
 import { ProblemPaths, ProgrammingLanguage } from './config.js'
+import { ROOT_PATH } from './extension.js'
 import { Problem } from './problem.js'
 
 export class Solution {
@@ -25,6 +27,8 @@ export class Solution {
       identifier.day.toString()
     )
 
+    if (!fs.existsSync(`${ROOT_PATH}/${path}`)) return undefined
+
     return new Solution(problem, path, language)
   }
 
@@ -44,5 +48,7 @@ export async function openSolution(solution: Solution) {
 }
 
 function getProblemPath(template: string, year: string, day: string): string {
-  return template.replace('{year}', year).replace('{day}', day)
+  return template
+    .replace('{year}', year)
+    .replace('{day}', day.toString().padStart(2, '0'))
 }

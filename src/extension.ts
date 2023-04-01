@@ -6,13 +6,13 @@ import { createListCommand } from './commands/list.js'
 import { openProblemCommand } from './commands/open-problem.js'
 import { ProblemTreeProvider } from './problem-tree.js'
 
-export function activate(context: vscode.ExtensionContext) {
-  // const rootPath =
-  //   vscode.workspace.workspaceFolders &&
-  //   vscode.workspace.workspaceFolders.length > 0
-  //     ? vscode.workspace.workspaceFolders[0].uri.fsPath
-  //     : undefined
+export const ROOT_PATH =
+  vscode.workspace.workspaceFolders &&
+  vscode.workspace.workspaceFolders.length > 0
+    ? vscode.workspace.workspaceFolders[0].uri.fsPath
+    : undefined
 
+export function activate(context: vscode.ExtensionContext) {
   const problemProvider = new ProblemTreeProvider()
   vscode.window.registerTreeDataProvider('problems', problemProvider)
 
