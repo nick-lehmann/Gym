@@ -3,6 +3,7 @@ import { downloadProblemInputCommand } from './commands/download.js'
 import { createGotoSolutionCommand } from './commands/goto-solution.js'
 import { createHelloWorldCommand } from './commands/helloworld.js'
 import { createListCommand } from './commands/list.js'
+import { createOpenProblemPageCommand } from './commands/open-problem-page.js'
 import { openProblemCommand } from './commands/open-problem.js'
 import { ProblemTreeProvider } from './problem-tree.js'
 
@@ -21,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
     problemProvider.refresh()
   )
 
+  context.subscriptions.push(createOpenProblemPageCommand(context))
   context.subscriptions.push(createGotoSolutionCommand(context))
   context.subscriptions.push(createHelloWorldCommand(context))
   context.subscriptions.push(openProblemCommand(context))

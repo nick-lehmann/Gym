@@ -1,7 +1,7 @@
-import fetch from "node-fetch"
-import { AdventOfCodeConfig } from "./config.js"
+import fetch from 'node-fetch'
+import { AdventOfCodeConfig } from './config.js'
 
-const INPUT_URL = "https://adventofcode.com/{year}/day/{day}/input"
+export const PROBLEM_URL = 'https://adventofcode.com/{year}/day/{day}'
 
 export async function fetchInput(
   config: AdventOfCodeConfig,
@@ -21,6 +21,10 @@ export async function fetchInput(
   return await response.text()
 }
 
+export function getProblemUrl(year: string, day: string): string {
+  return PROBLEM_URL.replace('{year}', year).replace('{day}', day)
+}
+
 function getInputUrl(year: string, day: string): string {
-  return INPUT_URL.replace("{year}", year).replace("{day}", day)
+  return `${getProblemUrl(year, day)}/input`
 }

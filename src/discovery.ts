@@ -47,7 +47,7 @@ export async function findSolutions(): Promise<Solution[]> {
         const identifier = identifierFromParts(matches)
         console.debug(`Matching file ${file}: ${identifier}`)
 
-        const problem = new Problem(identifier)
+        const problem = new Problem(provider, identifier)
 
         solutions.push(new Solution(problem, file, language))
       }
