@@ -1,6 +1,7 @@
 import * as vscode from 'vscode'
 import { parse as parseYaml } from 'yaml'
 import { z } from 'zod'
+import { getGlobPattern } from './discovery.js'
 import { AdventOfCodeConfig } from './providers/adventofcode/config.js'
 import { AdventOfCode } from './providers/adventofcode/index.js'
 import { Provider } from './providers/providers.js'
@@ -37,11 +38,42 @@ export const Config = z.object({
   data: TemplatePath,
   providers: ProvidersConfig,
 })
+export type Config = z.infer<typeof Config>
 
-export async function getConfig() {
+export async function getConfig(): Promise<Config> {
   const path = `${vscode.workspace.rootPath}/${CONFIG_NAME}`
   const content = await vscode.workspace.fs.readFile(vscode.Uri.file(path))
   const rawConfig = parseYaml(content.toString())
 
   return Config.parse(rawConfig)
+}
+
+export type SolutionPaths = {
+  provider: Provider
+  language: ProgrammingLanguage
+  root: string
+  pathPattern: string
+}
+
+export function getSolutionPathPatterns(config: Config): SolutionPaths[] {
+  if (!vscode.workspace.workspaceFolders) return []
+
+  const solutionPaths = []
+
+  for (const workspaceFolder of vscode.workspace.workspaceFolders) {
+    for (const provider of PROVIDERS) {
+      const identifierParts = Object.keys(provider.identifier.shape)
+
+      for (const [language, path] of Object.entries(config.paths)) {
+        solutionPaths.push({
+          provider,
+          language: language as ProgrammingLanguage,
+          root: workspaceFolder.uri.fsPath,
+          pathPattern: getGlobPattern(identifierParts, path),
+        })
+      }
+    }
+  }
+
+  return solutionPaths
 }

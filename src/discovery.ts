@@ -73,7 +73,7 @@ export async function findSolutionsByProblem(
   return solutions
 }
 
-function getGlobPattern(
+export function getGlobPattern(
   identifierParts: string[],
   pathTemplate: string
 ): string {

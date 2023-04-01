@@ -7,6 +7,7 @@ import { createOpenProblemPageCommand } from './commands/open-problem-page.js'
 import { openProblemCommand } from './commands/open-problem.js'
 import { createOpenSolutionsForProblemCommand } from './commands/open-solutions-for-problem.js'
 import { ProblemTreeProvider } from './problem-tree.js'
+import { Tests } from './test-provider.js'
 
 export const ROOT_PATH =
   vscode.workspace.workspaceFolders &&
@@ -22,6 +23,11 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand('problems.refreshEntry', () =>
     problemProvider.refresh()
   )
+
+  const testController = vscode.tests.createTestController('gym', 'Gym')
+  context.subscriptions.push(testController)
+  const tests = new Tests(testController)
+  tests.findFiles()
 
   context.subscriptions.push(createOpenSolutionsForProblemCommand(context))
   context.subscriptions.push(createOpenProblemPageCommand(context))
