@@ -15,7 +15,21 @@ export class Tests {
     private readonly fileChangedEmitter: vscode.EventEmitter<vscode.Uri>
   ) {
     this.controller = vscode.tests.createTestController('gym', 'Gym')
+    context.subscriptions.push(this.controller)
     this.controller.resolveHandler = this.resolveHandler
+  }
+
+  /**
+   * Create a run profile for the test controller.
+   *
+   * Source: https://code.visualstudio.com/api/extension-guides/testing#running-tests
+   */
+  createProfiles() {
+    this.controller.createRunProfile(
+      'Run',
+      vscode.TestRunProfileKind.Run,
+      (request, token) => this.run(request, token)
+    )
   }
 
   resolveHandler: vscode.TestController['resolveHandler'] = async (
@@ -25,6 +39,54 @@ export class Tests {
       this.context.subscriptions.push(...this.watch())
       return
     }
+  }
+
+  async run(request: vscode.TestRunRequest, token: vscode.CancellationToken) {
+    const testRun = this.controller.createTestRun(request)
+
+    const queue: vscode.TestItem[] = []
+    // Loop through all included tests, or all known tests, and add them to our queue
+    if (request.include) request.include.forEach((test) => queue.push(test))
+    else this.controller.items.forEach((test) => queue.push(test))
+
+    while (queue.length > 0 && !token.isCancellationRequested) {
+      const test = queue.pop()!
+
+      // Skip tests the user asked to exclude
+      if (request.exclude?.includes(test)) {
+        continue
+      }
+
+      console.info('Running test', test.label)
+
+      // switch (getType(test)) {
+      //   case ItemType.File:
+      //     // If we're running a file and don't know what it contains yet, parse it now
+      //     if (test.children.size === 0) {
+      //       await parseTestsInFileContents(test)
+      //     }
+      //     break
+      //   case ItemType.TestCase:
+      //     // Otherwise, just run the test case. Note that we don't need to manually
+      //     // set the state of parent tests; they'll be set automatically.
+      //     const start = Date.now()
+      //     try {
+      //       await assertTestPasses(test)
+      //       run.passed(test, Date.now() - start)
+      //     } catch (e) {
+      //       run.failed(
+      //         test,
+      //         new vscode.TestMessage(e.message),
+      //         Date.now() - start
+      //       )
+      //     }
+      //     break
+      // }
+
+      test.children.forEach((test) => queue.push(test))
+    }
+
+    testRun.end()
   }
 
   upsertSolution(uri: vscode.Uri): { file: vscode.TestItem } {

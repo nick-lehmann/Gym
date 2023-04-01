@@ -30,6 +30,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const tests = new Tests(context, config, fileChangedEmitter)
   await tests.findFiles()
+  tests.createProfiles()
 
   context.subscriptions.push(createOpenSolutionsForProblemCommand(context))
   context.subscriptions.push(createOpenProblemPageCommand(context))
