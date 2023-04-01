@@ -89,20 +89,20 @@ export class Tests {
     testRun.end()
   }
 
-  upsertSolution(uri: vscode.Uri): { file: vscode.TestItem } {
+  upsertSolution(uri: vscode.Uri): { testItem: vscode.TestItem } {
     const existing = this.controller.items.get(uri.toString())
-    if (existing) return { file: existing }
+    if (existing) return { testItem: existing }
 
-    const file = this.controller.createTestItem(
+    const testItem = this.controller.createTestItem(
       uri.toString(),
       uri.path.split('/').pop()!,
       uri
     )
-    this.controller.items.add(file)
+    this.controller.items.add(testItem)
 
     // TODO: Build similar hierarchy to the problems view.
-    file.canResolveChildren = false
-    return { file }
+    testItem.canResolveChildren = false
+    return { testItem }
   }
 
   async findFiles() {
@@ -137,8 +137,7 @@ export class Tests {
         this.fileChangedEmitter.fire(uri)
       })
       watcher.onDidChange(async (uri) => {
-        console.debug(`Solution changed: ${uri.toString()}`)
-        const { file } = this.upsertSolution(uri)
+        this.upsertSolution(uri)
         // if (data.didResolve) {
         //   await data.updateFromDisk(controller, file)
         // }
