@@ -39,7 +39,7 @@ async function discoverProvider(provider: Provider): Promise<Provider> {
       matches.shift()
 
       const identifier = provider.identifierFromParts(matches)
-      console.debug(`Matching file ${file}: ${identifier}`)
+      // console.debug(`Matching file ${file}: ${identifier}`)
 
       const existing = provider.problems.find((p) =>
         p.identifier.equals(identifier)
@@ -61,73 +61,6 @@ async function discoverProvider(provider: Provider): Promise<Provider> {
   return provider
 }
 
-// export async function findSolutions(): Promise<Solution[]> {
-//   console.debug('Start discovery of solutions')
-//   const config = await getConfig()
-//   const root = vscode.workspace.rootPath
-
-//   const providers = getProviders(config.providers)
-
-//   const solutions = []
-
-//   for (const provider of providers) {
-//     const identifierParts = Object.keys(provider.identifierParts())
-//     console.debug(
-//       `Discover solution for ${provider.name} with identifier parts ${identifierParts}`
-//     )
-
-//     for (const language of SUPPORTED_PROGRAMMING_LANGUAGES) {
-//       const pathTemplate = provider.config.paths[language]
-//       if (!pathTemplate) continue
-
-//       // TODO: Add validation.
-//       const globPattern = getGlobPattern(identifierParts, pathTemplate)
-//       // All files that match the path pattern described in the config.
-//       const possibleFiles = await glob(`${root}/${globPattern}`)
-
-//       const regex = getRegex(identifierParts, pathTemplate)
-
-//       console.debug(`Discover ${language} solutions`, {
-//         globPattern,
-//         regex,
-//         possibleFiles,
-//       })
-
-//       for (const file of possibleFiles) {
-//         const matches = file.match(regex)
-//         if (!matches) continue
-//         matches.shift()
-
-//         const identifier = identifierFromParts(matches)
-//         console.debug(`Matching file ${file}: ${identifier}`)
-
-//         const problem = new Problem(provider, identifier)
-
-//         solutions.push(new Solution(problem, file, language))
-//       }
-//     }
-//   }
-
-//   console.debug('Done finding solutions: ', solutions)
-
-//   return solutions
-// }
-
-export async function findSolutionsByProblem(
-  problem: Problem
-): Promise<Solution[]> {
-  // const config = await getConfig()
-  // const solutions = []
-
-  // for (const language of SUPPORTED_PROGRAMMING_LANGUAGES) {
-  //   const solution = Solution.find(config.paths, problem, language)
-  //   if (solution !== undefined) solutions.push(solution)
-  // }
-
-  // return solutions
-  return []
-}
-
 export function getGlobPattern(
   identifierParts: string[],
   pathTemplate: PathTemplate
@@ -145,32 +78,31 @@ function getRegex(identifierParts: string[], pathTemplate: string): RegExp {
   return new RegExp(regex)
 }
 
-export type SolutionPaths = {
-  provider: Provider
-  language: ProgrammingLanguage
-  root: string
-  pathPattern: string
-}
+// watch(): vscode.FileSystemWatcher[] {
+// const solutionPaths = getSolutionPathPatterns(this.config)
+// return solutionPaths.map((solutionPath) => {
+//   const watcher = vscode.workspace.createFileSystemWatcher(
+//     solutionPath.pathPattern
+//   )
 
-// export function getSolutionPathPatterns(config: Config): SolutionPaths[] {
-//   if (!vscode.workspace.workspaceFolders) return []
+//   watcher.onDidCreate((uri) => {
+//     console.debug(`New solution found: ${uri.toString()}`)
+//     this.upsertSolution(uri)
+//     this.fileChangedEmitter.fire(uri)
+//   })
+//   watcher.onDidChange(async (uri) => {
+//     this.upsertSolution(uri)
+//     // if (data.didResolve) {
+//     //   await data.updateFromDisk(controller, file)
+//     // }
+//     this.fileChangedEmitter.fire(uri)
+//   })
+//   watcher.onDidDelete((uri) => {
+//     console.debug(`Solution deleted: ${uri.toString()}`)
+//     this.controller.items.delete(uri.toString())
+//   })
 
-//   const solutionPaths = []
-
-//   for (const workspaceFolder of vscode.workspace.workspaceFolders) {
-//     for (const provider of getProviders(config.providers)) {
-//       const identifierParts = Object.keys(provider.identifier.shape)
-
-//       for (const [language, path] of Object.entries(provider.config.paths)) {
-//         solutionPaths.push({
-//           provider,
-//           language: language as ProgrammingLanguage,
-//           root: workspaceFolder.uri.fsPath,
-//           pathPattern: getGlobPattern(identifierParts, path),
-//         })
-//       }
-//     }
-//   }
-
-//   return solutionPaths
+//   return watcher
+// })
+//   return []
 // }

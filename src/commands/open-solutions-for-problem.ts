@@ -1,8 +1,6 @@
 import * as vscode from 'vscode'
 import { IDENTIFIER } from '../config/index.js'
-import { findSolutionsByProblem } from '../discovery.js'
 import { TreeItem, TreeItemType } from '../problem-tree.js'
-import { openSolution } from '../solution.js'
 
 export function createOpenSolutionsForProblemCommand(
   context: vscode.ExtensionContext
@@ -17,8 +15,8 @@ export function createOpenSolutionsForProblemCommand(
         return
       }
 
-      const solutions = await findSolutionsByProblem(node.problem)
-      await Promise.all(solutions.map((s) => openSolution(s)))
+      // const solutions = await findSolutionsByProblem(node.problem)
+      // await Promise.all(solutions.map((s) => openSolution(s)))
     }
   )
 }

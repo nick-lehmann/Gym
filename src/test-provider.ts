@@ -1,5 +1,6 @@
 import * as vscode from 'vscode'
 import { Gym } from './gym.js'
+import { TreeNode } from './tree.js'
 
 /**
  * Provides a test controller that lets you run your solutions from the integrated testing view.
@@ -8,6 +9,7 @@ import { Gym } from './gym.js'
  */
 export class Tests {
   private readonly controller: vscode.TestController
+  private readonly nodeCache = new Map<string, TreeNode<unknown>>()
 
   constructor(
     private readonly context: vscode.ExtensionContext,
@@ -31,20 +33,46 @@ export class Tests {
     )
   }
 
+  /**
+   * VS Code inquires us about the children of a test.
+   *
+   * There are two cases:
+   * - `item` is undefined, which means we should create the root nodes of the tree.
+   * - `item` is defined, which means we should create the children of that node.
+   */
   resolveHandler: vscode.TestController['resolveHandler'] = async (
     item: vscode.TestItem | undefined
   ) => {
     if (!item) {
-      for (const provider of this.gym.providers) {
-        const providerItem = this.controller.createTestItem(
-          provider.name,
-          provider.name
-        )
-        this.controller.items.add(providerItem)
-        providerItem.canResolveChildren = false
-      }
+      for (const provider of this.gym.providers) this.addItem(provider.node)
       return
     }
+
+    const node = this.nodeCache.get(item.id)
+    if (node === undefined) {
+      vscode.window.showErrorMessage(
+        `Unable to resolve node that does not exit: ${item.id}`
+      )
+      return
+    }
+
+    for (const childNode of node.getChildren()) this.addItem(childNode, item)
+  }
+
+  addItem(node: TreeNode<unknown>, parent?: vscode.TestItem) {
+    const id = node.id()
+    const existing = this.controller.items.get(id)
+    if (existing !== undefined) {
+      console.debug('Test item already exists', id)
+      return
+    }
+
+    console.debug('Adding test item', id)
+    this.nodeCache.set(id, node)
+    const item = this.treeNodeToTestItem(node)
+
+    if (parent) parent.children.add(item)
+    else this.controller.items.add(item)
   }
 
   async run(request: vscode.TestRunRequest, token: vscode.CancellationToken) {
@@ -95,74 +123,13 @@ export class Tests {
     testRun.end()
   }
 
-  upsertSolution(uri: vscode.Uri): { testItem: vscode.TestItem } {
-    const existing = this.controller.items.get(uri.toString())
-    if (existing) return { testItem: existing }
-
+  private treeNodeToTestItem(node: TreeNode<any>): vscode.TestItem {
     const testItem = this.controller.createTestItem(
-      uri.toString(),
-      uri.path.split('/').pop()!,
-      uri
+      node.id(),
+      node.label(),
+      node.uri()
     )
-    this.controller.items.add(testItem)
-
-    // TODO: Build similar hierarchy to the problems view.
-    testItem.canResolveChildren = false
-    return { testItem }
+    testItem.canResolveChildren = node.canHaveChildren
+    return testItem
   }
-
-  populate() {
-    for (const provider of this.gym.providers) {
-      const providerItem = this.controller.createTestItem(
-        provider.name,
-        provider.name
-      )
-      this.controller.items.add(providerItem)
-      providerItem.canResolveChildren = false
-    }
-    // const config = await getConfig()
-    // const solutionPaths = await getSolutionPathPatterns(config)
-    // for (const solutionPath of solutionPaths) {
-    //   const files = await vscode.workspace.findFiles(
-    //     solutionPath.pathPattern,
-    //     undefined,
-    //     1000
-    //   )
-    //   for (const file of files) this.upsertSolution(file)
-    // }
-  }
-
-  /**
-   * Watch the workspace for any change to your solutions.
-   *
-   * TODO: Does not work currently.
-   */
-  // private watch(): vscode.FileSystemWatcher[] {
-  // const solutionPaths = getSolutionPathPatterns(this.config)
-  // return solutionPaths.map((solutionPath) => {
-  //   const watcher = vscode.workspace.createFileSystemWatcher(
-  //     solutionPath.pathPattern
-  //   )
-
-  //   watcher.onDidCreate((uri) => {
-  //     console.debug(`New solution found: ${uri.toString()}`)
-  //     this.upsertSolution(uri)
-  //     this.fileChangedEmitter.fire(uri)
-  //   })
-  //   watcher.onDidChange(async (uri) => {
-  //     this.upsertSolution(uri)
-  //     // if (data.didResolve) {
-  //     //   await data.updateFromDisk(controller, file)
-  //     // }
-  //     this.fileChangedEmitter.fire(uri)
-  //   })
-  //   watcher.onDidDelete((uri) => {
-  //     console.debug(`Solution deleted: ${uri.toString()}`)
-  //     this.controller.items.delete(uri.toString())
-  //   })
-
-  //   return watcher
-  // })
-  //   return []
-  // }
 }

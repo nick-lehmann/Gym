@@ -1,25 +1,23 @@
+import * as vscode from 'vscode'
 import { TreeItemType } from './problem-tree.js'
-import { Problem } from './problem.js'
-import { Provider } from './providers/providers.js'
-import { Solution } from './solution.js'
 
-interface ResourceIdentifier {
-  deserialize(): string
-  serialize(input: string): ResourceIdentifier | undefined
-}
+export abstract class TreeNode<Inner> {
+  abstract type: TreeItemType
 
-interface TreeNodeContent extends Record<TreeItemType, unknown> {
-  [TreeItemType.Provider]: Provider
-  [TreeItemType.Problem]: Problem
-  [TreeItemType.Solution]: Solution
-}
+  // VS Code wants to know in advance which tree items could be expanded and which never.
+  // If set to true, the user will be able to expand the tree item.
+  abstract canHaveChildren: boolean
 
-interface TreeNode<T extends TreeItemType, Children> {
-  type: T
+  // The text shown to the user.
+  abstract id(): string
+  abstract label(): string
+  uri(): vscode.Uri | undefined {
+    return undefined
+  }
 
-  inner(): TreeNodeContent[T]
+  abstract inner(): Inner
 
-  parent(): TreeNode<any, TreeNode<T, Children>> | undefined
-  hasChildren(): boolean
-  getChildren(): Promise<TreeNode<any, Children>[]>
+  abstract parent(): TreeNode<any> | undefined
+  abstract hasChildren(): boolean
+  abstract getChildren(): TreeNode<any>[]
 }

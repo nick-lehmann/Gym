@@ -31,6 +31,6 @@ export class AOCProblemIdentifier extends ProblemIdentifier<Identifier> {
   }
 
   toString(): string {
-    return `${this.year}-${this.day}`
+    return `${this.year}-${this.day.toString().padStart(2, '0')}`
   }
 }

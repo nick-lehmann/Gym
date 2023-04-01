@@ -1,38 +1,60 @@
 import * as vscode from 'vscode'
 import { ProgrammingLanguage } from './config/language.js'
+import { TreeItemType } from './problem-tree.js'
 import { Problem } from './problem.js'
+import { TreeNode } from './tree.js'
 
 export class Solution {
+  public node: SolutionNode = new SolutionNode(this)
+
   constructor(
     public readonly problem: Problem,
     public readonly path: string,
     public readonly language: ProgrammingLanguage
   ) {}
 
-  //   static find(
-  //     paths: ProblemPaths,
-  //     problem: Problem,
-  //     language: ProgrammingLanguage
-  //   ): Solution | undefined {
-  //     const pathTemplate = paths[language]
-  //     if (!pathTemplate) return undefined
-
-  //     const { identifier } = problem
-
-  //     const path = getProblemPath(
-  //       pathTemplate,
-  //       identifier.year.toString(),
-  //       identifier.day.toString()
-  //     )
-
-  //     if (!fs.existsSync(`${ROOT_PATH}/${path}`)) return undefined
-
-  //     return new Solution(problem, path, language)
-  //   }
-
   // TODO: Do not use `rootPath`
   absolutePath() {
     return `${vscode.workspace.rootPath}/${this.path}`
+  }
+}
+
+export class SolutionNode extends TreeNode<Solution> {
+  type = TreeItemType.Solution
+  canHaveChildren = false
+
+  constructor(public readonly solution: Solution) {
+    super()
+  }
+
+  inner() {
+    return this.solution
+  }
+
+  id(): string {
+    return (
+      this.solution.problem.node.id() + '/solutions/' + this.solution.language
+    )
+  }
+
+  uri(): vscode.Uri {
+    return vscode.Uri.file(this.solution.absolutePath())
+  }
+
+  label(): string {
+    return this.inner().language
+  }
+
+  parent() {
+    return this.solution.problem.node
+  }
+
+  hasChildren() {
+    return false
+  }
+
+  getChildren() {
+    return []
   }
 }
 
@@ -43,10 +65,4 @@ export async function openSolution(solution: Solution) {
   await vscode.window.showTextDocument(document, {
     preview: false,
   })
-}
-
-function getProblemPath(template: string, year: string, day: string): string {
-  return template
-    .replace('{year}', year)
-    .replace('{day}', day.toString().padStart(2, '0'))
 }

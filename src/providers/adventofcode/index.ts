@@ -8,7 +8,7 @@ export class AdventOfCode extends Provider<
   AdventOfCodeConfig
 > {
   constructor(config: AdventOfCodeConfig) {
-    super('Advent of Code', ['year', 'day'], config)
+    super('advent-of-code', ['year', 'day'], config)
   }
 
   getLinkToProblem(identifier: { year: number; day: number }): string {
