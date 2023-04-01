@@ -1,6 +1,5 @@
 import * as vscode from 'vscode'
-import { IDENTIFIER } from '../config.js'
-import { findSolutions } from '../discovery.js'
+import { IDENTIFIER } from '../config/index.js'
 
 export function createListCommand(
   context: vscode.ExtensionContext
@@ -8,6 +7,6 @@ export function createListCommand(
   return vscode.commands.registerCommand(`${IDENTIFIER}.list`, async () => {
     console.debug('Listing all problems')
 
-    await findSolutions()
+    // await findSolutions()
   })
 }

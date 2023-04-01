@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { IDENTIFIER } from '../config.js'
+import { IDENTIFIER } from '../config/index.js'
 import { findSolutionsByProblem } from '../discovery.js'
 import { TreeItem, TreeItemType } from '../problem-tree.js'
 import { openSolution } from '../solution.js'

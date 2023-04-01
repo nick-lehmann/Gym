@@ -1,11 +1,12 @@
 import * as vscode from 'vscode'
-import { getConfig, getProviders } from './config.js'
-import { findSolutions, findSolutionsByProblem } from './discovery.js'
+import { Gym } from './gym.js'
 import { Problem } from './problem.js'
 import { Provider } from './providers/providers.js'
 import { Solution } from './solution.js'
 
 export class ProblemTreeProvider implements vscode.TreeDataProvider<TreeItem> {
+  constructor(private readonly gym: Gym) {}
+
   getChildren(element?: TreeItem): vscode.ProviderResult<TreeItem[]> {
     if (element === undefined) return this.getProviderItems()
     if (element.provider !== undefined) {
@@ -19,32 +20,35 @@ export class ProblemTreeProvider implements vscode.TreeDataProvider<TreeItem> {
   }
 
   async getProviderItems(): Promise<TreeItem[]> {
-    // TODO: Only show `enabled` providers
-    const config = await getConfig()
-    const providers = Object.values(getProviders(config.providers))
-
-    return providers.map((provider) =>
+    return this.gym.providers.map((provider) =>
       TreeItem.fromProvider(provider, vscode.TreeItemCollapsibleState.Collapsed)
     )
   }
 
   // TODO: Add switch to show all available problems?
   async getProblemItems(provider: Provider): Promise<TreeItem[]> {
-    const solutions = await findSolutions()
-    const allProblems = solutions.map((s) => s.problem)
-
-    const uniqueProblems = deduplicateProblems(allProblems)
-    uniqueProblems.sort(compareProblemsByIdentifier)
-
-    return uniqueProblems.map((problem) =>
-      TreeItem.fromProblem(problem, vscode.TreeItemCollapsibleState.Collapsed)
+    return provider.problems.map((p) =>
+      TreeItem.fromProblem(p, vscode.TreeItemCollapsibleState.Collapsed)
     )
+    // return this.gym.providers.find((p) => p.name === provider.name)!.problems.sort((a, b) => a.identifier.compare(b.identifier)
+
+    // const solutions = await findSolutions()
+    // const allProblems = solutions.map((s) => s.problem)
+
+    // const uniqueProblems = deduplicateProblems(allProblems)
+    // uniqueProblems.sort(compareProblemsByIdentifier)
+
+    // return uniqueProblems.map((problem) =>
+    //   TreeItem.fromProblem(problem, vscode.TreeItemCollapsibleState.Collapsed)
+    // )
   }
 
   async getSolutionItems(problem: Problem): Promise<TreeItem[]> {
-    const solutions = await findSolutionsByProblem(problem)
+    return problem.solutions.map((s) => TreeItem.fromSolution(s))
 
-    return solutions.map((s) => TreeItem.fromSolution(s))
+    // const solutions = await findSolutionsByProblem(problem)
+
+    // return solutions.map((s) => TreeItem.fromSolution(s))
   }
 
   getTreeItem(element: TreeItem): vscode.TreeItem | Thenable<vscode.TreeItem> {
@@ -100,7 +104,7 @@ export class TreeItem extends vscode.TreeItem {
 
     if (provider) label = provider.name
     // TODO: Move to identifier
-    if (problem) label = `${problem.identifier.year}-${problem.identifier.day}`
+    if (problem) label = problem.identifier.toString()
     if (solution) label = solution.language
 
     super(label, collapsibleState)
@@ -145,25 +149,25 @@ export class TreeItem extends vscode.TreeItem {
   }
 }
 
-function compareProblemsByIdentifier(
-  { identifier: i1 }: Problem,
-  { identifier: i2 }: Problem
-): number {
-  if (i1.year < i2.year) return -1
-  if (i1.year > i2.year) return 1
-  if (i1.day < i2.day) return -1
-  if (i1.day < i2.day) return 1
-  return 0
-}
+// function compareProblemsByIdentifier(
+//   { identifier: i1 }: Problem,
+//   { identifier: i2 }: Problem
+// ): number {
+//   if (i1.year < i2.year) return -1
+//   if (i1.year > i2.year) return 1
+//   if (i1.day < i2.day) return -1
+//   if (i1.day < i2.day) return 1
+//   return 0
+// }
 
-function deduplicateProblems(problems: Problem[]): Problem[] {
-  return problems.filter(
-    (problem, index, self) =>
-      index ===
-      self.findIndex(
-        (p) =>
-          p.identifier.year === problem.identifier.year &&
-          p.identifier.day === problem.identifier.day
-      )
-  )
-}
+// function deduplicateProblems(problems: Problem[]): Problem[] {
+//   return problems.filter(
+//     (problem, index, self) =>
+//       index ===
+//       self.findIndex(
+//         (p) =>
+//           p.identifier.year === problem.identifier.year &&
+//           p.identifier.day === problem.identifier.day
+//       )
+//   )
+// }

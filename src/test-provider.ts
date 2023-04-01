@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { getConfig } from './config.js'
+import { Gym } from './gym.js'
 
 /**
  * Provides a test controller that lets you run your solutions from the integrated testing view.
@@ -11,8 +11,7 @@ export class Tests {
 
   constructor(
     private readonly context: vscode.ExtensionContext,
-    private readonly config: Config,
-    private readonly fileChangedEmitter: vscode.EventEmitter<vscode.Uri>
+    private readonly gym: Gym
   ) {
     this.controller = vscode.tests.createTestController('gym', 'Gym')
     context.subscriptions.push(this.controller)
@@ -36,7 +35,14 @@ export class Tests {
     item: vscode.TestItem | undefined
   ) => {
     if (!item) {
-      this.context.subscriptions.push(...this.watch())
+      for (const provider of this.gym.providers) {
+        const providerItem = this.controller.createTestItem(
+          provider.name,
+          provider.name
+        )
+        this.controller.items.add(providerItem)
+        providerItem.canResolveChildren = false
+      }
       return
     }
   }
@@ -105,18 +111,25 @@ export class Tests {
     return { testItem }
   }
 
-  async findFiles() {
-    const config = await getConfig()
-    const solutionPaths = await getSolutionPathPatterns(config)
-
-    for (const solutionPath of solutionPaths) {
-      const files = await vscode.workspace.findFiles(
-        solutionPath.pathPattern,
-        undefined,
-        1000
+  populate() {
+    for (const provider of this.gym.providers) {
+      const providerItem = this.controller.createTestItem(
+        provider.name,
+        provider.name
       )
-      for (const file of files) this.upsertSolution(file)
+      this.controller.items.add(providerItem)
+      providerItem.canResolveChildren = false
     }
+    // const config = await getConfig()
+    // const solutionPaths = await getSolutionPathPatterns(config)
+    // for (const solutionPath of solutionPaths) {
+    //   const files = await vscode.workspace.findFiles(
+    //     solutionPath.pathPattern,
+    //     undefined,
+    //     1000
+    //   )
+    //   for (const file of files) this.upsertSolution(file)
+    // }
   }
 
   /**
@@ -124,31 +137,32 @@ export class Tests {
    *
    * TODO: Does not work currently.
    */
-  private watch(): vscode.FileSystemWatcher[] {
-    const solutionPaths = getSolutionPathPatterns(this.config)
-    return solutionPaths.map((solutionPath) => {
-      const watcher = vscode.workspace.createFileSystemWatcher(
-        solutionPath.pathPattern
-      )
+  // private watch(): vscode.FileSystemWatcher[] {
+  // const solutionPaths = getSolutionPathPatterns(this.config)
+  // return solutionPaths.map((solutionPath) => {
+  //   const watcher = vscode.workspace.createFileSystemWatcher(
+  //     solutionPath.pathPattern
+  //   )
 
-      watcher.onDidCreate((uri) => {
-        console.debug(`New solution found: ${uri.toString()}`)
-        this.upsertSolution(uri)
-        this.fileChangedEmitter.fire(uri)
-      })
-      watcher.onDidChange(async (uri) => {
-        this.upsertSolution(uri)
-        // if (data.didResolve) {
-        //   await data.updateFromDisk(controller, file)
-        // }
-        this.fileChangedEmitter.fire(uri)
-      })
-      watcher.onDidDelete((uri) => {
-        console.debug(`Solution deleted: ${uri.toString()}`)
-        this.controller.items.delete(uri.toString())
-      })
+  //   watcher.onDidCreate((uri) => {
+  //     console.debug(`New solution found: ${uri.toString()}`)
+  //     this.upsertSolution(uri)
+  //     this.fileChangedEmitter.fire(uri)
+  //   })
+  //   watcher.onDidChange(async (uri) => {
+  //     this.upsertSolution(uri)
+  //     // if (data.didResolve) {
+  //     //   await data.updateFromDisk(controller, file)
+  //     // }
+  //     this.fileChangedEmitter.fire(uri)
+  //   })
+  //   watcher.onDidDelete((uri) => {
+  //     console.debug(`Solution deleted: ${uri.toString()}`)
+  //     this.controller.items.delete(uri.toString())
+  //   })
 
-      return watcher
-    })
-  }
+  //   return watcher
+  // })
+  //   return []
+  // }
 }

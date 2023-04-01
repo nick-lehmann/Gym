@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { PathTemplate, ProgrammingLanguage } from '../config.js'
+import { ProgrammingLanguage } from '../config/language.js'
+import { PathTemplate } from '../config/path-template.js'
 
 export const ProblemPaths = z.record(ProgrammingLanguage, z.string())
 export type ProblemPaths = z.infer<typeof ProblemPaths>

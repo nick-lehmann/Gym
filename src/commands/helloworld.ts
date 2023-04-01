@@ -1,5 +1,5 @@
-import * as vscode from "vscode"
-import { IDENTIFIER } from "../config.js"
+import * as vscode from 'vscode'
+import { IDENTIFIER } from '../config/index.js'
 
 export function createHelloWorldCommand(
   context: vscode.ExtensionContext

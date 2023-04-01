@@ -1,20 +1,15 @@
-import * as vscode from "vscode"
-import { getConfig, IDENTIFIER } from "../config.js"
-import { fetchInput } from "../providers/adventofcode/fetch.js"
+import * as vscode from 'vscode'
+import { Config, IDENTIFIER } from '../config/index.js'
+import { fetchInput } from '../providers/adventofcode/fetch.js'
 
 export function downloadProblemInputCommand(
-  context: vscode.ExtensionContext
+  context: vscode.ExtensionContext,
+  config: Config
 ): vscode.Disposable {
   return vscode.commands.registerCommand(
     `${IDENTIFIER}.downloadProblemInput`,
     async () => {
-      const config = await getConfig()
-
-      const input = await fetchInput(
-        config.providers.adventofcode,
-        "2020",
-        "1"
-      )
+      const input = await fetchInput(config.providers.adventofcode, '2020', '1')
       console.log(input)
     }
   )

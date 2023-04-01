@@ -1,7 +1,5 @@
-import * as fs from 'fs'
 import * as vscode from 'vscode'
-import { ProgrammingLanguage } from './config.js'
-import { ROOT_PATH } from './extension.js'
+import { ProgrammingLanguage } from './config/language.js'
 import { Problem } from './problem.js'
 
 export class Solution {
@@ -11,26 +9,26 @@ export class Solution {
     public readonly language: ProgrammingLanguage
   ) {}
 
-  static find(
-    paths: ProblemPaths,
-    problem: Problem,
-    language: ProgrammingLanguage
-  ): Solution | undefined {
-    const pathTemplate = paths[language]
-    if (!pathTemplate) return undefined
+  //   static find(
+  //     paths: ProblemPaths,
+  //     problem: Problem,
+  //     language: ProgrammingLanguage
+  //   ): Solution | undefined {
+  //     const pathTemplate = paths[language]
+  //     if (!pathTemplate) return undefined
 
-    const { identifier } = problem
+  //     const { identifier } = problem
 
-    const path = getProblemPath(
-      pathTemplate,
-      identifier.year.toString(),
-      identifier.day.toString()
-    )
+  //     const path = getProblemPath(
+  //       pathTemplate,
+  //       identifier.year.toString(),
+  //       identifier.day.toString()
+  //     )
 
-    if (!fs.existsSync(`${ROOT_PATH}/${path}`)) return undefined
+  //     if (!fs.existsSync(`${ROOT_PATH}/${path}`)) return undefined
 
-    return new Solution(problem, path, language)
-  }
+  //     return new Solution(problem, path, language)
+  //   }
 
   // TODO: Do not use `rootPath`
   absolutePath() {

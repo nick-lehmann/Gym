@@ -1,11 +1,12 @@
-import { Identifier } from './providers/adventofcode/identifier.js'
-import { Provider } from './providers/providers.js'
+import { ProblemIdentifier, Provider } from './providers/providers.js'
+import { Solution } from './solution.js'
 
 export class Problem {
   constructor(
     public readonly provider: Provider,
-    public readonly identifier: Identifier,
-    public readonly children: Problem[] = []
+    public readonly identifier: ProblemIdentifier,
+    // TODO: Add option to have other sub-problems as children.
+    public solutions: Solution[] = []
   ) {}
 
   getLink(): string {
