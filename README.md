@@ -3,7 +3,7 @@
 
 Features
 - [ ] Manage problems
-  - [ ] List problems
+  - [ ] List problems (all and current)
 	- [ ] Open up all solutions to a problem
 	- [ ] Create text overview
 - [ ] Create new problems

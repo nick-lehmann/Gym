@@ -49,6 +49,11 @@
         "command": "gym.openProblemPage",
         "title": "Open problem page",
         "icon": "$(globe)"
+      },
+      {
+        "command": "gym.openAllSolutionForProblem",
+        "title": "Open all solution for a problem",
+        "icon": "$(pencil)"
       }
     ],
     "viewsContainers": {
@@ -86,6 +91,11 @@
         },
         {
           "command": "gym.openProblemPage",
+          "when": "view == problems && viewItem == problem",
+          "group": "inline"
+        },
+        {
+          "command": "gym.openAllSolutionForProblem",
           "when": "view == problems && viewItem == problem",
           "group": "inline"
         }
