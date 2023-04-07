@@ -1,7 +1,7 @@
 import { Provider } from '../providers.js'
 import { AdventOfCodeConfig } from './config.js'
 import { getProblemUrl } from './fetch.js'
-import { AOCProblemIdentifier } from './identifier.js'
+import { AOCPart, AOCProblemIdentifier } from './identifier.js'
 
 export class AdventOfCode extends Provider<
   AOCProblemIdentifier,
@@ -16,6 +16,10 @@ export class AdventOfCode extends Provider<
   }
 
   identifierFromParts(parts: string[]): AOCProblemIdentifier {
-    return new AOCProblemIdentifier(parseInt(parts[0]), parseInt(parts[1]))
+    return new AOCProblemIdentifier(
+      parseInt(parts[0]),
+      parseInt(parts[1]),
+      parts[2] as AOCPart
+    )
   }
 }

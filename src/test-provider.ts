@@ -1,10 +1,7 @@
-import { ExecOptions } from 'child_process'
 import * as vscode from 'vscode'
 import { Gym } from './gym.js'
 import { Problem } from './problem.js'
-import { getAocTestdataForProblem } from './providers/adventofcode/data.js'
-import { AOCProblemIdentifier } from './providers/adventofcode/identifier.js'
-import { runRustTest } from './runner/rust.js'
+import { run } from './runner/run.js'
 import { TreeNode } from './tree.js'
 
 /**
@@ -105,42 +102,20 @@ export class Tests {
         continue
       }
 
-      // if (node.type !== TreeItemType.Solution) {
-      //   vscode.window.showErrorMessage(
-      //     `Unable to any test that does not represent a single solution`
-      //   )
-      //   continue
-      // }
-
       const problem = node.inner() as Problem
-      const identifier = problem.identifier as AOCProblemIdentifier
-      // TODO: Save this information in the identifier
-      // const part = 'part1'
-      // const paddedDay = identifier.day.toString().padStart(2, '0')
 
-      const data = await getAocTestdataForProblem(problem)
+      try {
+        const { status, duration } = await run(problem)
 
-      const testcase = data.tests.part1[0]
-
-      // const testFilter = `aoc${identifier.year}::day${paddedDay}::test_${identifier.year}_${identifier.day}_${part}_example`
-      const testFilter = 'aoc2020::day01::test_2022_1_part1_example'
-
-      const cmd = `cat input.txt | cargo test ${testFilter} -- --nocapture`
-      const execOptions: ExecOptions = {
-        cwd: '/Users/nick/Projekte/Advent Of Code/rust', // TODO: Find exec directory from workspace.
-      }
-
-      const start = Date.now()
-      const actual = await runRustTest()
-      const duration = Date.now() - start
-
-      const expected = testcase.solution.toString()
-
-      if (actual.trim() == expected.trim()) {
-        testRun.passed(test, duration)
-      } else {
-        const message = vscode.TestMessage.diff('Test failed', expected, actual)
-        testRun.failed(test, message, duration)
+        if (status === 'passed') {
+          testRun.passed(test, duration)
+        } else {
+          // const message = vscode.TestMessage.diff('Test failed')
+          const message = new vscode.TestMessage('Test failed')
+          testRun.failed(test, message, duration)
+        }
+      } catch (e: unknown) {
+        vscode.window.showErrorMessage('failed to run test')
       }
     }
 
