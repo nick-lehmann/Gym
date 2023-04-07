@@ -1,4 +1,6 @@
 import { exec } from 'child_process'
+import * as vscode from 'vscode'
+import { CONTEXT } from '../extension.js'
 import { Problem } from '../problem.js'
 import { getAocTestdataForProblem } from '../providers/adventofcode/data.js'
 import { AOCProblemIdentifier } from '../providers/adventofcode/identifier.js'
@@ -11,7 +13,7 @@ const CWD = '/Users/nick/Projekte/Advent Of Code/rust' // TODO: Find exec direct
 const IDENTIFIER = new AOCProblemIdentifier(2020, 1, 'part1')
 
 const SAMPLE_RUNNER_CONFIG: RunnerConfig = {
-  cwd: 'rust',
+  directoy: 'rust',
   command:
     'cat {file} | cargo test aoc{year}::day0{day}::test_{year}_{day}_{part} -- --nocapture',
   input: {
@@ -48,8 +50,10 @@ export async function run(
   const fileName = 'input.txt'
   const cmd = getTestCommand(config, identifier, testCaseName, fileName)
 
+  const cwd = vscode.Uri.joinPath(CONTEXT.root, config.directoy)
+
   const start = Date.now()
-  const actual = await execTest(cmd, CWD, config)
+  const actual = await execTest(cmd, cwd.path, config)
   const duration = Date.now() - start
 
   return {

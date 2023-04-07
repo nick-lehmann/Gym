@@ -6,18 +6,27 @@ import { createListCommand } from './commands/list.js'
 import { createOpenProblemPageCommand } from './commands/open-problem-page.js'
 import { openProblemCommand } from './commands/open-problem.js'
 import { createOpenSolutionsForProblemCommand } from './commands/open-solutions-for-problem.js'
+import { Context } from './config/context.js'
 import { getConfig } from './config/load.js'
 import { discover } from './discovery.js'
 import { ProblemTreeProvider } from './problem-tree.js'
 import { Tests } from './test-provider.js'
 
-export const ROOT_PATH =
-  vscode.workspace.workspaceFolders &&
-  vscode.workspace.workspaceFolders.length > 0
-    ? vscode.workspace.workspaceFolders[0].uri.fsPath
-    : undefined
+function mustGetRootPath(): string {
+  const path =
+    vscode.workspace.workspaceFolders &&
+    vscode.workspace.workspaceFolders.length > 0
+      ? vscode.workspace.workspaceFolders[0].uri.fsPath
+      : undefined
 
-export async function activate(context: vscode.ExtensionContext) {
+  return path!
+}
+
+export const CONTEXT: Context = {
+  root: vscode.Uri.file(mustGetRootPath()),
+}
+
+export async function activate(extension: vscode.ExtensionContext) {
   const config = await getConfig()
 
   const gym = await discover(config)
@@ -31,16 +40,16 @@ export async function activate(context: vscode.ExtensionContext) {
     problemProvider.refresh()
   )
 
-  const tests = new Tests(context, gym)
+  const tests = new Tests(extension, gym)
   // await tests.()
   // tests.populate()
   tests.createProfiles()
 
-  context.subscriptions.push(createOpenSolutionsForProblemCommand(context))
-  context.subscriptions.push(createOpenProblemPageCommand(context))
-  context.subscriptions.push(createGotoSolutionCommand(context))
-  context.subscriptions.push(createHelloWorldCommand(context))
-  context.subscriptions.push(openProblemCommand(context, config))
-  context.subscriptions.push(downloadProblemInputCommand(context, config))
-  context.subscriptions.push(createListCommand(context))
+  extension.subscriptions.push(createOpenSolutionsForProblemCommand(extension))
+  extension.subscriptions.push(createOpenProblemPageCommand(extension))
+  extension.subscriptions.push(createGotoSolutionCommand(extension))
+  extension.subscriptions.push(createHelloWorldCommand(extension))
+  extension.subscriptions.push(openProblemCommand(extension, config))
+  extension.subscriptions.push(downloadProblemInputCommand(extension, config))
+  extension.subscriptions.push(createListCommand(extension))
 }

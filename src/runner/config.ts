@@ -20,7 +20,7 @@ export const OutputConfig = z.object({
 
 export const RunnerConfig = z.object({
   // Path relatie to the workspace folder where the test command is executed.
-  cwd: z.string(),
+  directoy: z.string(),
   command: PathTemplate,
   input: InputConfig,
   output: OutputConfig,
