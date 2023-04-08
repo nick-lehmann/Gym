@@ -2,5 +2,7 @@
   "editor.insertSpaces": false,
   "typescript.format.semicolons": "remove",
   "javascript.format.semicolons": "remove",
-  "C_Cpp.intelliSenseEngineFallback": "enabled"
+  "C_Cpp.intelliSenseEngineFallback": "enabled",
+  "javascript.preferences.importModuleSpecifierEnding": "minimal",
+  "typescript.preferences.importModuleSpecifierEnding": "minimal"
 }
