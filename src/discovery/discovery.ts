@@ -1,12 +1,12 @@
 import * as vscode from 'vscode'
-import { Config } from './config/index.js'
-import { ProgrammingLanguage } from './config/language.js'
-import { PathTemplate } from './config/path-template.js'
-import { getProviders } from './config/providers.js'
-import { Gym } from './gym.js'
-import { Problem } from './problem.js'
-import { Provider } from './providers/providers.js'
-import { Solution } from './solution.js'
+import { Config } from '../config/index.js'
+import { ProgrammingLanguage } from '../config/language.js'
+import { PathTemplate } from '../config/path-template.js'
+import { getProviders } from '../config/providers.js'
+import { Gym } from '../models/gym.js'
+import { Problem } from '../models/problem.js'
+import { Solution } from '../models/solution.js'
+import { Provider } from '../providers/providers.js'
 
 /**
  * Entrypoint for the workspace discovery.

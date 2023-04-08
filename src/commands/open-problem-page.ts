@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { IDENTIFIER } from '../config/index.js'
-import { TreeItem, TreeItemType } from '../problem-tree.js'
+import { TreeItem, TreeItemType } from '../explorer.js'
 
 export function createOpenProblemPageCommand(
   context: vscode.ExtensionContext

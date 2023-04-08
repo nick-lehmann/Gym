@@ -1,7 +1,7 @@
 import { exec } from 'child_process'
 import * as vscode from 'vscode'
 import { CONTEXT } from '../extension.js'
-import { Problem } from '../problem.js'
+import { Problem } from '../models/problem.js'
 import { getAocTestdataForProblem } from '../providers/adventofcode/data.js'
 import { AOCProblemIdentifier } from '../providers/adventofcode/identifier.js'
 import { RunnerConfig } from './config.js'

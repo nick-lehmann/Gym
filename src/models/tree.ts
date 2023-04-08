@@ -1,5 +1,5 @@
 import * as vscode from 'vscode'
-import { TreeItemType } from './problem-tree.js'
+import { TreeItemType } from '../explorer.js'
 
 export abstract class TreeNode<Inner> {
   abstract type: TreeItemType

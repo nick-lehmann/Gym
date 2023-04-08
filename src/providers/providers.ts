@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
-import { TreeItemType } from '../problem-tree.js'
-import { Problem } from '../problem.js'
-import { TreeNode } from '../tree.js'
+import { TreeItemType } from '../explorer.js'
+import { Problem } from '../models/problem.js'
+import { TreeNode } from '../models/tree.js'
 import { BaseProviderConfig } from './config.js'
 
 export abstract class ProblemIdentifier<

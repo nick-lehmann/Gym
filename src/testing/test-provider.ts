@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { Gym } from './gym.js'
-import { Problem } from './problem.js'
-import { run } from './runner/run.js'
-import { TreeNode } from './tree.js'
+import { Gym } from '../models/gym.js'
+import { Problem } from '../models/problem.js'
+import { TreeNode } from '../models/tree.js'
+import { run } from '../runner/run.js'
 
 /**
  * Provides a test controller that lets you run your solutions from the integrated testing view.

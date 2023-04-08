@@ -1,8 +1,8 @@
 import * as vscode from 'vscode'
-import { Gym } from './gym.js'
-import { Problem } from './problem.js'
+import { Gym } from './models/gym.js'
+import { Problem } from './models/problem.js'
+import { Solution } from './models/solution.js'
 import { Provider } from './providers/providers.js'
-import { Solution } from './solution.js'
 
 export class ProblemTreeProvider implements vscode.TreeDataProvider<TreeItem> {
   constructor(private readonly gym: Gym) {}

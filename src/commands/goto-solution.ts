@@ -1,7 +1,7 @@
 import * as vscode from 'vscode'
 import { IDENTIFIER } from '../config/index.js'
-import { TreeItem, TreeItemType } from '../problem-tree.js'
-import { openSolution } from '../solution.js'
+import { TreeItem, TreeItemType } from '../explorer.js'
+import { openSolution } from '../models/solution.js'
 
 export function createGotoSolutionCommand(
   context: vscode.ExtensionContext

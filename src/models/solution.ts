@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
-import { ProgrammingLanguage } from './config/language.js'
-import { TreeItemType } from './problem-tree.js'
+import { ProgrammingLanguage } from '../config/language.js'
+import { TreeItemType } from '../explorer.js'
 import { Problem } from './problem.js'
 import { TreeNode } from './tree.js'
 

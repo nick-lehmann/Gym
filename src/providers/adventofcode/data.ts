@@ -2,7 +2,7 @@ import { TextDecoder } from 'util'
 import * as vscode from 'vscode'
 import * as yaml from 'yaml'
 import { z } from 'zod'
-import { Problem } from '../../problem.js'
+import { Problem } from '../../models/problem.js'
 import { AOCProblemIdentifier } from './identifier.js'
 
 const AOCTestcase = z.object({

@@ -1,6 +1,6 @@
 import { Uri } from 'vscode'
-import { TreeItemType } from './problem-tree.js'
-import { ProblemIdentifier, Provider } from './providers/providers.js'
+import { TreeItemType } from '../explorer.js'
+import { ProblemIdentifier, Provider } from '../providers/providers.js'
 import { Solution } from './solution.js'
 import { TreeNode } from './tree.js'
 

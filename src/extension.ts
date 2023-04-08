@@ -8,9 +8,9 @@ import { openProblemCommand } from './commands/open-problem.js'
 import { createOpenSolutionsForProblemCommand } from './commands/open-solutions-for-problem.js'
 import { Context } from './config/context.js'
 import { getConfig } from './config/load.js'
-import { discover } from './discovery.js'
-import { ProblemTreeProvider } from './problem-tree.js'
-import { Tests } from './test-provider.js'
+import { discover } from './discovery/discovery.js'
+import { ProblemTreeProvider } from './explorer.js'
+import { Tests } from './testing/test-provider.js'
 
 function mustGetRootPath(): string {
   const path =
